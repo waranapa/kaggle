@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Módulo 1 - Framingham, R y Copilot</title>
+<style>
+:root{--bg:#0f172a;--card:#111827;--card2:#1e293b;--text:#e5e7eb;--muted:#94a3b8;--accent:#38bdf8;--accent2:#22c55e;--warn:#f59e0b;--danger:#fb7185;--white:#fff}
+*{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#020617,#0f172a 55%,#111827);font-family:Segoe UI,Roboto,Arial,sans-serif;color:var(--text);overflow:hidden}.deck{height:100vh;width:100vw;position:relative}.slide{display:none;height:100vh;width:100vw;padding:54px 72px;animation:fade .35s ease}.slide.active{display:flex;flex-direction:column;justify-content:center}.top{position:fixed;top:14px;left:24px;right:24px;display:flex;justify-content:space-between;align-items:center;z-index:10;color:var(--muted);font-size:14px}.progress{position:fixed;bottom:0;left:0;height:6px;background:var(--accent);transition:.25s;width:0;z-index:20}.nav{position:fixed;bottom:22px;right:28px;display:flex;gap:10px;z-index:30}.nav button,.copy{background:#1e293b;color:var(--text);border:1px solid #334155;padding:10px 14px;border-radius:10px;cursor:pointer;font-weight:600}.nav button:hover,.copy:hover{border-color:var(--accent);color:#fff}h1{font-size:56px;line-height:1.05;margin:0 0 20px}h2{font-size:42px;margin:0 0 22px;color:#fff}h3{font-size:26px;margin:18px 0 10px;color:#bae6fd}p,li{font-size:24px;line-height:1.42}.muted{color:var(--muted)}.accent{color:var(--accent)}.green{color:var(--accent2)}.warn{color:var(--warn)}.grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.card{background:rgba(30,41,59,.82);border:1px solid #334155;border-radius:18px;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.25)}.big{font-size:30px}.pill{display:inline-block;background:rgba(56,189,248,.13);border:1px solid rgba(56,189,248,.45);padding:8px 13px;border-radius:999px;color:#bae6fd;margin:4px}.code,.prompt{font-family:Consolas,Monaco,monospace;background:#020617;border:1px solid #334155;border-radius:14px;padding:18px;white-space:pre-wrap;font-size:18px;line-height:1.45;position:relative}.prompt{border-left:6px solid var(--accent);font-family:Segoe UI,Roboto,Arial,sans-serif;font-size:21px}.tag{font-size:13px;text-transform:uppercase;letter-spacing:.08em;color:#67e8f9;margin-bottom:8px;font-weight:800}.quote{border-left:6px solid var(--accent2);padding-left:20px;font-size:32px;line-height:1.35;color:#fff}.small li,.small p{font-size:20px}.table{width:100%;border-collapse:collapse;font-size:19px;background:#0b1220;border-radius:14px;overflow:hidden}.table th,.table td{border-bottom:1px solid #263244;padding:12px;text-align:left}.table th{background:#162033;color:#bae6fd}.check{color:var(--accent2);font-weight:800}.x{color:var(--danger);font-weight:800}.footer-note{position:absolute;left:72px;bottom:34px;color:var(--muted);font-size:16px}.reveal{display:none}.show .reveal{display:block;animation:fade .3s}.kbd{border:1px solid #475569;border-bottom-width:3px;border-radius:8px;padding:2px 8px;background:#0b1220;font-size:16px}.center{text-align:center}.cols{columns:2;column-gap:40px}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@media(max-width:900px){h1{font-size:42px}h2{font-size:34px}.slide{padding:40px 28px}.grid,.grid3{grid-template-columns:1fr}p,li{font-size:20px}.code,.prompt{font-size:16px}.top{display:none}}
+</style>
+</head>
+<body>
+<div class="top"><div>Módulo 1 · Framingham + R + Copilot</div><div><span id="counter"></span></div></div>
+<div class="progress" id="progress"></div>
+<div class="deck">
+<section class="slide active">
+  <p class="pill">Ruta de decisión estadística en Ciencias de la Salud</p>
+  <h1>Conociendo los datos antes de analizar</h1>
+  <p class="big muted">Exploración de una base clínica con <span class="accent">R</span> y <span class="green">GitHub Copilot</span></p>
+  <div class="quote">La IA puede ayudar a escribir código; el investigador debe formular la pregunta e interpretar el resultado.</div>
+</section>
+
+<section class="slide">
+  <h2>Propósito del módulo</h2>
+  <div class="grid">
+    <div class="card"><h3>Lo que sí haremos</h3><ul><li>Conocer la base Framingham.</li><li>Cargar datos desde GitHub.</li><li>Usar Copilot como apoyo.</li><li>Evaluar estructura, calidad y descriptivos.</li><li>Formular preguntas de investigación.</li></ul></div>
+    <div class="card"><h3>Lo que no haremos aún</h3><ul><li>No elegiremos pruebas estadísticas.</li><li>No haremos inferencia.</li><li>No construiremos modelos predictivos.</li><li>No aceptaremos respuestas de IA sin revisión crítica.</li></ul></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Regla de oro</h2>
+  <div class="quote">Nunca ejecutaremos código generado por IA sin saber qué pregunta intenta responder.</div>
+  <div class="grid3" style="margin-top:28px">
+    <div class="card center"><h3>1</h3><p>¿Qué necesito saber?</p></div>
+    <div class="card center"><h3>2</h3><p>¿Qué le pido a Copilot?</p></div>
+    <div class="card center"><h3>3</h3><p>¿Cómo interpreto el resultado?</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Flujo de trabajo del módulo</h2>
+  <div class="card">
+    <p class="big center">Pregunta del investigador → Prompt para Copilot → Código en R → Resultado → Interpretación → Nueva pregunta</p>
+  </div>
+  <p class="muted">Este flujo evita que la capacitación parezca una clase de programación o una demostración pasiva de IA.</p>
+</section>
+
+<section class="slide">
+  <h2>Primer contacto: cargar la base desde GitHub</h2>
+  <p>Usaremos una fuente reproducible para que todos trabajen sobre el mismo archivo.</p>
+  <div class="prompt" id="p1"><div class="tag">Prompt para Copilot 1</div>Tengo una base de datos CSV disponible en esta URL:
+https://raw.githubusercontent.com/waranapa/kaggle/main/data
+
+Genera código en R para cargarla con readr, guardarla como un objeto llamado framingham y verificar que fue importada correctamente.</div>
+  <button class="copy" onclick="copyText('p1')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Código esperado</h2>
+  <div class="code">library(readr)
+
+url <- "https://raw.githubusercontent.com/waranapa/kaggle/main/data"
+
+framingham <- read_csv(url)
+
+dim(framingham)
+head(framingham)</div>
+  <p class="muted">No es necesario memorizar el código. La meta es entender qué hace.</p>
+</section>
+
+<section class="slide">
+  <h2>Pregunta al grupo</h2>
+  <div class="card center"><p class="big">Cuando R muestra algo como <span class="accent">4238 × 16</span>, ¿qué significa?</p></div>
+  <div class="grid reveal"><div class="card"><h3>Respuesta esperada</h3><p>4238 observaciones o pacientes.</p></div><div class="card"><h3>Respuesta esperada</h3><p>16 variables o características medidas.</p></div></div>
+  <p class="footer-note">Presione espacio para revelar respuestas.</p>
+</section>
+
+<section class="slide">
+  <h2>Comprender la estructura de la base</h2>
+  <p>Antes de hacer descriptivos, necesitamos saber qué variables existen y qué tipo de información contienen.</p>
+  <div class="prompt" id="p2"><div class="tag">Prompt para Copilot 2</div>Tengo una base llamada framingham en R. Genera código para conocer el número de filas, número de columnas, nombres de variables y estructura general de la base. Explica brevemente qué hace cada instrucción.</div>
+  <button class="copy" onclick="copyText('p2')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Funciones útiles para mirar la base</h2>
+  <div class="code">dim(framingham)
+names(framingham)
+str(framingham)
+head(framingham)</div>
+  <div class="grid small">
+    <div class="card"><h3>Pregunta didáctica</h3><p>¿Qué representa cada fila?</p><p class="green">Un paciente.</p></div>
+    <div class="card"><h3>Pregunta didáctica</h3><p>¿Qué representa cada columna?</p><p class="green">Una variable clínica, demográfica o de riesgo.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Tabla académica de variables</h2>
+  <p>Ahora no queremos solamente ver nombres; queremos clasificar las variables.</p>
+  <div class="prompt" id="p3"><div class="tag">Prompt para Copilot 3</div>Con la base framingham en R, genera una tabla con el nombre de cada variable, una descripción clínica probable y su tipo estadístico: categórica binaria, categórica ordinal, cuantitativa discreta o cuantitativa continua. Incluye el código en R para crear esa tabla.</div>
+  <button class="copy" onclick="copyText('p3')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Ejemplo de clasificación esperada</h2>
+  <table class="table"><tr><th>Variable</th><th>Descripción</th><th>Tipo estadístico</th></tr><tr><td>age</td><td>Edad</td><td>Cuantitativa discreta/continua</td></tr><tr><td>male</td><td>Sexo</td><td>Categórica binaria</td></tr><tr><td>currentSmoker</td><td>Fumador actual</td><td>Categórica binaria</td></tr><tr><td>cigsPerDay</td><td>Cigarrillos por día</td><td>Cuantitativa discreta</td></tr><tr><td>sysBP</td><td>Presión sistólica</td><td>Cuantitativa continua</td></tr><tr><td>TenYearCHD</td><td>Enfermedad coronaria a 10 años</td><td>Categórica binaria</td></tr></table>
+  <p class="muted">La clasificación debe discutirse, no aceptarse ciegamente.</p>
+</section>
+
+<section class="slide">
+  <h2>Discusión: ¿cuál es el desenlace?</h2>
+  <div class="card center"><p class="big">En esta base, ¿cuál variable parece representar el resultado clínico principal?</p></div>
+  <div class="card reveal center"><h3 class="green">TenYearCHD</h3><p>Indica si el paciente desarrolló enfermedad coronaria a 10 años.</p></div>
+</section>
+
+<section class="slide">
+  <h2>Calidad de datos: valores faltantes</h2>
+  <p>Un análisis serio no comienza comparando grupos. Comienza preguntando si la base está completa.</p>
+  <div class="prompt" id="p4"><div class="tag">Prompt para Copilot 4</div>Genera código en R para identificar valores faltantes en cada variable de la base framingham. Presenta una tabla con: nombre de la variable, número de valores faltantes y porcentaje de valores faltantes, ordenada de mayor a menor porcentaje.</div>
+  <button class="copy" onclick="copyText('p4')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Ejemplo de interpretación de faltantes</h2>
+  <table class="table"><tr><th>Variable</th><th>% faltantes</th><th>Lectura inicial</th></tr><tr><td>glucose</td><td>9.16%</td><td>Requiere evaluación</td></tr><tr><td>education</td><td>2.48%</td><td>Bajo impacto inicial</td></tr><tr><td>BPMeds</td><td>1.25%</td><td>Bajo impacto inicial</td></tr><tr><td>totChol</td><td>1.18%</td><td>Bajo impacto inicial</td></tr></table>
+  <p class="warn">No se decide automáticamente eliminar o imputar. Primero se interpreta.</p>
+</section>
+
+<section class="slide">
+  <h2>Pregunta crítica</h2>
+  <div class="quote">¿Podemos ignorar los datos faltantes?</div>
+  <div class="card reveal"><p><strong>Respuesta académica:</strong> depende del porcentaje, de la variable afectada, del objetivo del análisis y del mecanismo que produjo esos faltantes.</p></div>
+</section>
+
+<section class="slide">
+  <h2>Análisis Exploratorio de Datos: EDA/ELA</h2>
+  <p>El EDA no prueba hipótesis. Ayuda a conocer la población, detectar patrones, revisar calidad y formular preguntas.</p>
+  <div class="prompt" id="p5"><div class="tag">Prompt para Copilot 5</div>Genera en R una caracterización descriptiva de la población en la base framingham. Para variables cuantitativas reporta n, media, desviación estándar, mediana, mínimo y máximo. Para variables categóricas reporta frecuencias absolutas y porcentajes.</div>
+  <button class="copy" onclick="copyText('p5')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Variables cuantitativas sugeridas</h2>
+  <div class="grid3">
+    <div class="card center"><h3>Edad</h3><p>age</p></div>
+    <div class="card center"><h3>Colesterol</h3><p>totChol</p></div>
+    <div class="card center"><h3>Presión sistólica</h3><p>sysBP</p></div>
+    <div class="card center"><h3>IMC</h3><p>BMI</p></div>
+    <div class="card center"><h3>Frecuencia cardíaca</h3><p>heartRate</p></div>
+    <div class="card center"><h3>Glucosa</h3><p>glucose</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Variables categóricas sugeridas</h2>
+  <div class="grid3">
+    <div class="card center"><h3>Sexo</h3><p>male</p></div>
+    <div class="card center"><h3>Fumador actual</h3><p>currentSmoker</p></div>
+    <div class="card center"><h3>Medicamentos PA</h3><p>BPMeds</p></div>
+    <div class="card center"><h3>Hipertensión</h3><p>prevalentHyp</p></div>
+    <div class="card center"><h3>Diabetes</h3><p>diabetes</p></div>
+    <div class="card center"><h3>Desenlace</h3><p>TenYearCHD</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Visualización exploratoria</h2>
+  <p>Los gráficos ayudan a detectar distribución, asimetría, valores extremos y posibles errores.</p>
+  <div class="prompt" id="p6"><div class="tag">Prompt para Copilot 6</div>Genera gráficos en R con ggplot2 para explorar la distribución de age, totChol, glucose y sysBP en la base framingham. Usa histogramas con títulos claros, etiquetas en español y un tema visual limpio.</div>
+  <button class="copy" onclick="copyText('p6')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>No preguntamos solamente: “¿es normal?”</h2>
+  <div class="grid">
+    <div class="card"><h3>Preguntas más útiles</h3><ul><li>¿Dónde se concentra la mayoría de valores?</li><li>¿Hay asimetría?</li><li>¿Hay valores extremos?</li><li>¿Existen valores clínicamente poco plausibles?</li></ul></div>
+    <div class="card"><h3>Interpretación clínica</h3><p>La distribución de una variable debe leerse con criterio estadístico y conocimiento clínico.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>EDA orientado al desenlace</h2>
+  <p>Después de describir la población completa, podemos mirar descriptivamente a quienes desarrollaron o no enfermedad coronaria.</p>
+  <div class="prompt" id="p7"><div class="tag">Prompt para Copilot 7</div>Genera código en R para comparar descriptivamente la edad, presión sistólica, colesterol total, glucosa, tabaquismo, diabetes e hipertensión según la variable TenYearCHD. No realices pruebas estadísticas; solo descriptivos por grupo.</div>
+  <button class="copy" onclick="copyText('p7')">Copiar prompt</button>
+</section>
+
+<section class="slide">
+  <h2>Importante: todavía no estamos haciendo inferencia</h2>
+  <div class="grid">
+    <div class="card"><h3 class="green">Sí estamos haciendo</h3><ul><li>Exploración.</li><li>Descripción.</li><li>Detección de patrones.</li><li>Generación de preguntas.</li></ul></div>
+    <div class="card"><h3 class="warn">Aún no estamos haciendo</h3><ul><li>Pruebas de hipótesis.</li><li>Conclusiones causales.</li><li>Modelos predictivos.</li><li>Decisiones clínicas definitivas.</li></ul></div>
+  </div>
+</section>
+
+<section class="slide">
+  <h2>Del hallazgo descriptivo a la pregunta</h2>
+  <div class="card"><p class="big">Ejemplo: si observamos que quienes desarrollaron CHD parecen tener mayor edad promedio...</p></div>
+  <div class="card reveal"><p class="green">Pregunta de investigación posible:</p><p>¿La edad difiere entre los pacientes que desarrollaron enfermedad coronaria a 10 años y quienes no la desarrollaron?</p></div>
+</section>
+
+<section class="slide">
+  <h2>Actividad por grupos</h2>
+  <div class="prompt" id="p8"><div class="tag">Prompt para Copilot 8</div>Con base en el análisis descriptivo de framingham, ayúdame a formular cinco preguntas de investigación posibles relacionadas con riesgo cardiovascular. Para cada pregunta, identifica la variable desenlace y las variables explicativas involucradas.</div>
+  <button class="copy" onclick="copyText('p8')">Copiar prompt</button>
+  <p class="muted">Luego el grupo valida si las preguntas son clínicamente pertinentes y estadísticamente respondibles.</p>
+</section>
+
+<section class="slide">
+  <h2>¿Quién hace qué?</h2>
+  <table class="table"><tr><th>Actividad</th><th>Investigador</th><th>Copilot/IA</th><th>R</th></tr><tr><td>Formular preguntas</td><td class="check">Sí</td><td class="x">No</td><td class="x">No</td></tr><tr><td>Generar código</td><td>Supervisa</td><td class="check">Sí</td><td class="x">No</td></tr><tr><td>Ejecutar cálculos</td><td class="x">No</td><td class="x">No</td><td class="check">Sí</td></tr><tr><td>Interpretar resultados</td><td class="check">Sí</td><td>Apoya</td><td class="x">No</td></tr><tr><td>Tomar decisiones científicas</td><td class="check">Sí</td><td class="x">No</td><td class="x">No</td></tr></table>
+</section>
+
+<section class="slide">
+  <h2>Cierre del Módulo 1</h2>
+  <ul class="big"><li>Ya sabemos cargar una base desde una fuente reproducible.</li><li>Clasificamos variables.</li><li>Evaluamos datos faltantes.</li><li>Realizamos un EDA inicial.</li><li>Usamos Copilot como apoyo, no como sustituto.</li></ul>
+</section>
+
+<section class="slide">
+  <h2>Puente hacia el Módulo 2</h2>
+  <div class="quote">Ahora que conocemos los datos y formulamos preguntas, necesitamos una ruta para decidir qué análisis estadístico corresponde.</div>
+  <p class="big muted">Módulo 2: de la pregunta de investigación a la ruta de decisión estadística.</p>
+</section>
+</div>
+<div class="nav"><button onclick="prevSlide()">← Anterior</button><button onclick="toggleReveal()">Revelar</button><button onclick="nextSlide()">Siguiente →</button></div>
+<script>
+const slides=[...document.querySelectorAll('.slide')];let i=0;function update(){slides.forEach((s,k)=>s.classList.toggle('active',k===i));document.getElementById('counter').textContent=`${i+1} / ${slides.length}`;document.getElementById('progress').style.width=((i+1)/slides.length*100)+'%'}function nextSlide(){if(i<slides.length-1){i++;update()}}function prevSlide(){if(i>0){i--;update()}}function toggleReveal(){slides[i].classList.toggle('show')}document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')nextSlide();if(e.key==='ArrowLeft')prevSlide();if(e.key===' ') {e.preventDefault();toggleReveal();}});function copyText(id){let el=document.getElementById(id);let text=el.innerText.replace(/^Prompt para Copilot \d+\n/,'');navigator.clipboard.writeText(text);event.target.textContent='Copiado';setTimeout(()=>event.target.textContent='Copiar prompt',1200)}update();
+</script>
+</body>
+</html>
